@@ -16,7 +16,7 @@ export function setAttributes(el, attrs) {
 
 // The classList property returns an object—a DOMTokenList
 // A DOMTokenList object has an add() method that takes multiple class names and adds them to the element
-function setClass(el, className) {
+export function setClass(el, className) {
     el.className = '';
 
     if (typeof className === 'string') {
@@ -42,7 +42,7 @@ export function setAttribute(el, key, value) {
     } else if (key.startsWith('data-')) {
         el.setAttribute(key, value);
     } else {
-        el[name] = value;
+        el[key] = value;
     }
 }
 

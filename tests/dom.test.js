@@ -54,3 +54,86 @@ test('h creates a login form with input fields', () => {
     });
 });
 
+test('withoutNulls deeply filters nested null/undefined values in arrays', () => {
+    const input = [1, null, [2, undefined, [3, null]], 4];
+    const result = withoutNulls(input.flat(2));
+    expect(result).toEqual([1, 2, 3, 4]);
+});
+
+test('hString handles empty string and trims', () => {
+    expect(hString('')).toEqual({ type: DOM_TYPES.TEXT, value: '' });
+    expect(hString('  spaced  ')).toEqual({ type: DOM_TYPES.TEXT, value: '  spaced  ' });
+});
+
+test('h supports deeply nested elements', () => {
+    const node = h('div', { id: 'container' }, [
+        h('section', {}, [
+            h('h1', {}, ['Title']),
+            h('p', {}, ['Paragraph']),
+            h('ul', {}, [
+                h('li', {}, ['Item 1']),
+                h('li', {}, ['Item 2']),
+            ])
+        ])
+    ]);
+
+    expect(node.tag).toBe('div');
+    expect(node.children[0].children[2].children.length).toBe(2); // ul > li x2
+    expect(node.children[0].children[0].children[0].value).toBe('Title'); // h1 > text
+});
+
+test('hFragment deeply removes nulls and includes nested text nodes', () => {
+    const frag = hFragment([
+        null,
+        h('span', {}, [null, 'valid']),
+        undefined,
+        h('div', {}, [h('br'), null]),
+        'tail'
+    ]);
+
+    expect(frag.type).toBe(DOM_TYPES.FRAGMENT);
+    expect(frag.children.length).toBe(3);
+    expect(frag.children[0].tag).toBe('span');
+    expect(frag.children[2]).toEqual({ type: DOM_TYPES.TEXT, value: 'tail' });
+});
+
+test('h supports dynamic attributes and conditional rendering', () => {
+    const isLoggedIn = true;
+    const user = 'Alice';
+
+    const nav = h('nav', {}, [
+        isLoggedIn
+            ? h('span', {}, [`Welcome, ${user}`])
+            : h('a', { href: '/login' }, ['Login']),
+        h('ul', {}, [
+            h('li', {}, ['Home']),
+            h('li', {}, ['About']),
+        ])
+    ]);
+
+    expect(nav.children[0].tag).toBe('span');
+    expect(nav.children[1].children.length).toBe(2);
+    expect(nav.children[0].children[0].value).toBe('Welcome, Alice');
+});
+
+test('h creates an element with mixed children', () => {
+    const res = h('div', { id: 'main' }, [
+        'hello',
+        h('span', {}, ['world'])
+    ]);
+
+    expect(res).toEqual({
+        type: DOM_TYPES.ELEMENT,
+        tag: 'div',
+        props: {id: 'main'},
+        children: [
+            { type: DOM_TYPES.TEXT, value: 'hello' },
+            {
+                type: DOM_TYPES.ELEMENT,
+                tag: 'span',
+                props: {},
+                children: [{ type: DOM_TYPES.TEXT, value: 'world' }]
+            }
+        ]
+    });
+})

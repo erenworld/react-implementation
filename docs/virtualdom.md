@@ -20,3 +20,12 @@ Each node in the virtual DOM is an object with a type property that identifies w
 - tag: The tag name of the HTML element.
 - props: The attributes of the HTML element, including the event handlers inside an on property.
 - children: The ordered children of the HTML element. If the children array is absent from the node, the element is a leaf node
+
+### Component
+A component is a pure function—a function with no side effects—that takes the state of the application as input and returns a virtual DOM tree representing a chunk of the view of the application.
+
+## Different types of virtual nodes require different DOM nodes to be created
+- A virtual node of type text requires a Text node to be created (via the document
+*.createTextNode()* method).
+- A virtual node of type element requires an Element node to be created (via the
+*document.createElement()* method).
