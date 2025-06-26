@@ -1,4 +1,6 @@
-import { DOM_TYPES } from "./h";
+import { DOM_TYPES } from './h';
+import { setAttributes } from './attributes';
+import { addEventListeners } from './events';
 
 export function mountDOM(vdom, parentElement) {
     switch (vdom.type) {
@@ -28,3 +30,27 @@ function createTextNode(vdom, parentElement) {
     parentElement.append(textNode);
 }
 
+function createFragmentNode(vdom, parentElement) {
+    const { children } = vdom;
+    vdom.el = parentElement;
+
+    children.forEach((child) => mountDOM(child, parentElement));
+}
+
+// Object.getPrototypeOf(document.createElement('foobar')) // HTMLUnknownElement
+function createElementNode(vdom, parentElement) {
+    const { tag, props, children } = vdom;
+    const elementNode = document.createElement(tag);
+
+    addProps(element, props, vdom);
+    vdom.el = elementNode;
+    children.forEach((child) => mountDOM(child, elementNode));
+    parentElement.append(elementNode);
+}
+
+function addProps(element, props, vdom) {
+    const { on: events, ...attrs } = props;
+
+    vdom.listeners = addEventListeners(events, el);
+    setAttributes(el, attrs);
+}
