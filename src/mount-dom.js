@@ -42,7 +42,7 @@ function createElementNode(vdom, parentElement) {
     const { tag, props, children } = vdom;
     const elementNode = document.createElement(tag);
 
-    addProps(element, props, vdom);
+    addProps(elementNode, props, vdom);
     vdom.el = elementNode;
     children.forEach((child) => mountDOM(child, elementNode));
     parentElement.append(elementNode);
@@ -51,6 +51,7 @@ function createElementNode(vdom, parentElement) {
 function addProps(element, props, vdom) {
     const { on: events, ...attrs } = props;
 
-    vdom.listeners = addEventListeners(events, el);
-    setAttributes(el, attrs);
+    vdom.listeners = addEventListeners(events, element);
+    setAttributes(element, attrs);
 }
+
