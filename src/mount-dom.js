@@ -19,3 +19,12 @@ export function mountDOM(vdom, parentElement) {
         }
     }
 }
+
+function createTextNode(vdom, parentElement) {
+    const { value } = vdom;
+    const textNode = document.createTextNode(value);
+
+    vdom.el = textNode;
+    parentElement.append(textNode);
+}
+
