@@ -9,7 +9,7 @@ export const DOM_TYPES = {
 // strings into text virtual nodes
 function mapTextNodes(childrenArray) {
     return childrenArray.map((child) =>
-        typeof child === 'string' ? ReactCreateText(child) : child);
+        typeof child === 'string' ? hText(child) : child);
 }
 
 function hText(str) {
