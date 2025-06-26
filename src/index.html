@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test createElement Virtual DOM</title>
+</head>
+<body>
+  <script>
+    // Simule utils/arrays.js
+    function withoutNulls(arr) {
+      return arr.filter(x => x != null);
+    }
+
+    const DOM_TYPES = {
+      TEXT: 'text',
+      ELEMENT: 'element',
+      FRAGMENT: 'fragment'
+    };
+
+    function mapTextNodes(childrenArray) {
+      return childrenArray.map(child =>
+        typeof child === 'string' ? hString(child) : child
+      );
+    }
+
+    function hString(str) {
+      return {
+        type: DOM_TYPES.TEXT,
+        value: str
+      };
+    }
+
+    function hElement(tag, props = {}, children = []) {
+      return {
+        tag,
+        props,
+        children: mapTextNodes(withoutNulls(children)),
+        type: DOM_TYPES.ELEMENT
+      };
+    }
+
+    function hFragment(vNodes) {
+      return {
+        type: DOM_TYPES.FRAGMENT,
+        children: mapTextNodes(withoutNulls(vNodes))
+      };
+    }
+
+    // Alias pratique
+    const h = hElement;
+
+    function login(event) {
+      event.preventDefault();
+      alert('Login clicked!');
+    }
+
+    // Exemple d'utilisation :
+    const vDom = h('form', { class: 'login-form', action: 'login' }, [
+      h('input', { type: 'text', name: 'user' }),
+      h('input', { type: 'password', name: 'pass' }),
+      h('button', { on: { click: login } }, ['Log in'])
+    ]);
+
+    console.log(vDom); // Affiche le Virtual DOM
+
+    // Bonus : tu peux ajouter une fonction pour "rendre" ce virtual DOM en vrai DOM si tu veux
+  </script>
+</body>
+</html>
