@@ -1,39 +1,52 @@
-export function setAttributes(el, attrs) {
+export function setAttributes(element, attrs) {
     const { class: className, style, ...otherAttrs } = attrs; // split
 
     if (className) {
-        setClass(el, className);
+        setClass(element, className);
     }
-    if (style) {
-        // el, 'fontSize', '14px'..
+    if (style && typeof style === 'object') {
+        // element, 'fontSize', '14px'..
         // [['color', 'red'], ['fontSize', '14px']]
         Object.entries(style).forEach(([prop, value]) => { 
-            setStyle(el, prop, value)
+            setStyle(element, prop, value)
         })
     }
     for (const [name, value] of Object.entries(otherAttrs)) {
-        setAttributes(el, name, value); // set the rest
+        setAttribute(element, name, value); // set the rest
     }
 }
 
 // The classList property returns an object—a DOMTokenList
-function setClass(el, className) {
-    el.className = '';
+function setClass(element, className) {
+    element.className = '';
 
     if (typeof className === 'string') {
-        el.className = className;
+        element.className = className;
     }
     if (Array.isArray(className)) {
-        el.classList.add(...className);
+        element.classList.add(...className);
     }
 }
 
-function setStyle(el, key, value) {
-    el.style[key] = value;
+function setStyle(element, name, value) {
+    element.style[name] = value;
 }
 
-function removeStyle (el, key) {
-    el.style[key] = null;
+function removeStyle (element, name) {
+    element.style[name] = null;
 }
 
-// TODOS: implement setAttribute
+function setAttribute(element, name, value) {
+    if (value == null) {
+        removeAttribute(element);
+    } else if (name.startsWith('data-')) {
+        element.setAttribute(name, value);
+    } else {
+        element[name] = value;
+    }
+}
+
+function removeAttribute(element, name) {
+    element[name] = null;
+    element.removeAttribute(name);
+}
