@@ -28,6 +28,12 @@ function setClass(el, className) {
     }
 }
 
-// TODOS: implement setStyle
+function setStyle(el, key, value) {
+    el.style[key] = value;
+}
+
+function removeStyle (el, key) {
+    el.style[key] = null;
+}
 
 // TODOS: implement setAttribute
