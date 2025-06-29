@@ -1,15 +1,9 @@
-import { withoutNulls } from './utils/arrays';
+import { withoutNulls, mapTextNodes } from './utils/arrays';
 
 export const DOM_TYPES = {
     TEXT: 'text',
     ELEMENT: 'element',
     FRAGMENT: 'fragment'
-}
-
-// strings into text virtual nodes
-function mapTextNodes(childrenArray) {
-    return childrenArray.map((child) =>
-        typeof child === 'string' ? hText(child) : child);
 }
 
 function hText(str) {
