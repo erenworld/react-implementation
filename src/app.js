@@ -4,7 +4,7 @@ import { Dispatcher } from './dispatcher';
 
 export function createApp({ state, view, reducers = {} }) {
     let parentEl = null;
-    let vdom = null;
+    let vdom = null; 
 
     const dispatcher = new Dispatcher(); 
     //  Subscribed the renderApp() function to be an after-command handler
@@ -22,6 +22,7 @@ export function createApp({ state, view, reducers = {} }) {
         }) 
         subscriptions.push(subs);
     }
+    // Draw UI.
     function renderApp() {
         if (vdom) {
             destroyDOM(vdom); // If a previous view exists, unmounts it.
@@ -41,3 +42,12 @@ export function createApp({ state, view, reducers = {} }) {
         }
     }
 }
+
+// createApp({
+//     state: { count: 0 },
+//     view: (state, dispatch) => `<div>${state.count}</div>`,
+//     reducers: {
+//       increment: (state) => ({ count: state.count + 1 })
+//     }
+// });
+

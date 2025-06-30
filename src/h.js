@@ -6,7 +6,7 @@ export const DOM_TYPES = {
     FRAGMENT: 'fragment'
 }
 
-function hText(str) {
+function hString(str) {
     return {
         type: DOM_TYPES.TEXT,
         value: str
