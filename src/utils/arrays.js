@@ -10,3 +10,11 @@ export function mapTextNodes(childrenArray) {
         typeof child === 'string' ? hString(child) : child);
 }
 
+export function arraysDiff(oldArray, newArray) {
+    // TODOS: Add more robust solution is to maintain the order of classes in the classList.
+    return {
+        added: newArray.filter((newItem) => !oldArray.includes(newItem)),
+        removed: oldArray.filter((oldItem) => !newArray.includes(oldItem))
+    }
+}
+
