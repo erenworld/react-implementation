@@ -42,3 +42,25 @@ class ArrayWithOriginalIndices {
         return this.#array.length;
     }
 }
+
+export function arraysDiffSequence(
+    oldArray,
+    newArray,
+    equalsFn = (a, b) => a === b
+) {
+    const sequence = [];
+    const array = new ArrayWithOriginalIndices(oldArray, equalsFn);
+
+    for (let index = 0; index < newArray.length; index++) { // new array
+        // TODO: removal case - item in old at current i doesnt exist in new
+
+        // TODO: noop case
+
+        // TODO: addition case
+
+        // TODO: move case
+    }
+    // TODO: remove extra items
+
+    return sequence;
+}
