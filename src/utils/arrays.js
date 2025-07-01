@@ -42,6 +42,7 @@ class ArrayWithOriginalIndices {
         return this.#array.length;
     }
 
+    // Remove.
     isRemoval(index, newArray) {
         if (index >= this.length) { // Nothing to remove.
             return false;
@@ -64,6 +65,52 @@ class ArrayWithOriginalIndices {
 
         return operation;
     }
+
+    // Noop.
+    isNoop(index, newArray) {
+        if (index >= this.length) {
+            return false;
+        }
+        const item = this.#array[index];
+        const newItem = newArray[index];
+
+        return this.#equalsFn(item, newItem);
+    }
+    originalIndexAt(index) {
+        return this.#originalIndices[index];
+    }
+    noopItem(index) {
+        return {
+            op: ARRAY_DIFF_OP.NOOP,
+            originalIndex: this.originalIndexAt(index),
+            index,
+            item: this.#array[index]
+        }
+    }
+
+    // Add.
+    isAddition(item, fromIdx) {
+        return this.findIndexFrom(item, fromIdx) == -1;
+    }
+    findIndexFrom(item, fromIdx) {
+        for (let i = fromIdx; i < this.length; i++) {
+            if (this.#equalsFn(item, this.#array[i])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    addItem(item, index) {
+        const operation = {
+            op: ARRAY_DIFF_OP.ADD,
+            index,
+            item
+        }
+        this.#array.splice(index, 0, item);
+        this.#originalIndices.splice(index, 0, -1);
+
+        return operation;
+    }
 }
 
 export function arraysDiffSequence(
@@ -80,10 +127,16 @@ export function arraysDiffSequence(
             index--;
             continue;
         }
+        if (array.isNoop(index, newArray)) {
+            sequence.push(array.noopItem(index));
+            continue;
+        }
         
-        // TODO: noop case
-
-        // TODO: addition case
+        const item = newArray[index];
+        if (array.isAddition(item, index)) {
+            sequence.push(array.addItem(item, index));
+            continue;
+        }
 
         // TODO: move case
     }
