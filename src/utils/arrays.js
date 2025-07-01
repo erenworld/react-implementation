@@ -27,4 +27,18 @@ export const ARRAY_DIFF_OP = {
 
 // Keep track of the old array’s original indices so that when you modify a copy 
 // of the old array and you apply each operation, you can keep the original indices
+class ArrayWithOriginalIndices {
+    #array = [];
+    #originalIndices = [];
+    #equalsFn
 
+    constructor(array, equalsFn) {
+        this.#array = [...array];
+        this.#originalIndices = array.map((_, i) => i);
+        this.#equalsFn = equalsFn; // Save the function used to compare items
+    }
+
+    get length() {
+        return this.#array.length;
+    }
+}
