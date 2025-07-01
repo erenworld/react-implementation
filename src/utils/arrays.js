@@ -41,6 +41,29 @@ class ArrayWithOriginalIndices {
     get length() {
         return this.#array.length;
     }
+
+    isRemoval(index, newArray) {
+        if (index >= this.length) { // Nothing to remove.
+            return false;
+        }
+        const item = this.#array[index]; // Gets the item in the old array at the given index.
+        const indexInNewArray = newArray.findIndex((newItem) => {
+            this.#equalsFn(item, newItem)
+        })
+
+        return indexInNewArray === -1; // Removed.
+    }
+    removeItem(index) {
+        const operation = {
+            op: ARRAY_DIFF_OP.REMOVE,
+            index,
+            item: this.#array[index] // Current index in old array.
+        }
+        this.#array.splice(index, 1);
+        this.#originalIndices.splice(index, 1);
+
+        return operation;
+    }
 }
 
 export function arraysDiffSequence(
@@ -52,8 +75,12 @@ export function arraysDiffSequence(
     const array = new ArrayWithOriginalIndices(oldArray, equalsFn);
 
     for (let index = 0; index < newArray.length; index++) { // new array
-        // TODO: removal case - item in old at current i doesnt exist in new
-
+        if (array.isRemoval(index, newArray)) {
+            sequence.push(array.removeItem(index));
+            index--;
+            continue;
+        }
+        
         // TODO: noop case
 
         // TODO: addition case
