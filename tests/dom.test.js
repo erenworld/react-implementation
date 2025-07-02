@@ -1,4 +1,5 @@
-import { h, hString, hFragment, withoutNulls, DOM_TYPES } from '../src/h';
+import { hElement, hString, hFragment, DOM_TYPES } from '../src/h';
+import { withoutNulls } from '../src/utils/arrays';
 
 test('withoutNulls removes null and undefined values', () => {
     const input = [1, null, 2, undefined, 3];
@@ -11,7 +12,7 @@ test('hString returns a text node', () => {
 });
 
 test('h returns a DOM element with text children', () => {
-    const node = h('p', {}, ['Hello']);
+    const node = hElement('p', {}, ['Hello']);
     expect(node).toEqual({
         tag: 'p',
         props: {},
@@ -21,16 +22,16 @@ test('h returns a DOM element with text children', () => {
 });
 
 test('hFragment removes nulls and wraps elements in fragment', () => {
-    const frag = hFragment([null, h('br'), 'text']);
+    const frag = hFragment([null, hString('br'), 'text']);
     expect(frag.type).toBe(DOM_TYPES.FRAGMENT);
     expect(frag.children.length).toBe(2);
     expect(frag.children[1]).toEqual({ type: DOM_TYPES.TEXT, value: 'text' });
 });
 
 test('h creates a login form with input fields', () => {
-    const loginForm = h('form', { class: 'login-form', action: 'login' }, [
-        h('input', { type: 'text', name: 'user' }),
-        h('input', { type: 'password', name: 'pass' }),
+    const loginForm = hElement('form', { class: 'login-form', action: 'login' }, [
+        hElement('input', { type: 'text', name: 'user' }),
+        hElement('input', { type: 'password', name: 'pass' }),
     ]);
 
     expect(loginForm).toEqual({
@@ -66,13 +67,13 @@ test('hString handles empty string and trims', () => {
 });
 
 test('h supports deeply nested elements', () => {
-    const node = h('div', { id: 'container' }, [
-        h('section', {}, [
-            h('h1', {}, ['Title']),
-            h('p', {}, ['Paragraph']),
-            h('ul', {}, [
-                h('li', {}, ['Item 1']),
-                h('li', {}, ['Item 2']),
+    const node = hElement('div', { id: 'container' }, [
+        hElement('section', {}, [
+            hElement('h1', {}, ['Title']),
+            hElement('p', {}, ['Paragraph']),
+            hElement('ul', {}, [
+                hElement('li', {}, ['Item 1']),
+                hElement('li', {}, ['Item 2']),
             ])
         ])
     ]);
@@ -85,9 +86,9 @@ test('h supports deeply nested elements', () => {
 test('hFragment deeply removes nulls and includes nested text nodes', () => {
     const frag = hFragment([
         null,
-        h('span', {}, [null, 'valid']),
+        hElement('span', {}, [null, 'valid']),
         undefined,
-        h('div', {}, [h('br'), null]),
+        hElement('div', {}, [hElement('br'), null]),
         'tail'
     ]);
 
@@ -101,13 +102,13 @@ test('h supports dynamic attributes and conditional rendering', () => {
     const isLoggedIn = true;
     const user = 'Alice';
 
-    const nav = h('nav', {}, [
+    const nav = hElement('nav', {}, [
         isLoggedIn
-            ? h('span', {}, [`Welcome, ${user}`])
-            : h('a', { href: '/login' }, ['Login']),
-        h('ul', {}, [
-            h('li', {}, ['Home']),
-            h('li', {}, ['About']),
+            ? hElement('span', {}, [`Welcome, ${user}`])
+            : hElement('a', { href: '/login' }, ['Login']),
+        hElement('ul', {}, [
+            hElement('li', {}, ['Home']),
+            hElement('li', {}, ['About']),
         ])
     ]);
 
@@ -117,9 +118,9 @@ test('h supports dynamic attributes and conditional rendering', () => {
 });
 
 test('h creates an element with mixed children', () => {
-    const res = h('div', { id: 'main' }, [
+    const res = hElement('div', { id: 'main' }, [
         'hello',
-        h('span', {}, ['world'])
+        hElement('span', {}, ['world'])
     ]);
 
     expect(res).toEqual({
