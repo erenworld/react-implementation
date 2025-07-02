@@ -67,10 +67,10 @@ describe('arraysDiffSequence', () => {
     ];
 
     testCases.forEach(({ name, oldArray, newArray }) => {
-        test(name, () => {
+        test(`${name}: [${oldArray}] → [${newArray}]`, () => {
             const sequence = arraysDiffSequence(oldArray, newArray);
             const result = applyArraysDiffSequence(oldArray, sequence);
             expect(result).toEqual(newArray);
         });
-    });
+    });    
 });
