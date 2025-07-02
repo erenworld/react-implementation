@@ -48,9 +48,9 @@ class ArrayWithOriginalIndices {
             return false;
         }
         const item = this.#array[index]; // Gets the item in the old array at the given index.
-        const indexInNewArray = newArray.findIndex((newItem) => {
+        const indexInNewArray = newArray.findIndex((newItem) =>
             this.#equalsFn(item, newItem)
-        })
+        )
 
         return indexInNewArray === -1; // Removed.
     }
@@ -111,6 +111,38 @@ class ArrayWithOriginalIndices {
 
         return operation;
     }
+    // Move.
+    moveItem(item, toIndex) {
+        const fromIndex = this.findIndexFrom(item, toIndex);
+
+        const operation = {
+            op: ARRAY_DIFF_OP.MOVE,
+            originalIndex: this.#originalIndices[fromIndex],
+            from: fromIndex,
+            index: toIndex,
+            item: this.#array[fromIndex]
+        }
+
+        const [_item] = this.#array.splice(fromIndex, 1);
+        this.#array.splice(toIndex, 0, _item);
+
+        const [originalIndex] =
+            this.#originalIndices.splice(fromIndex, 1)
+        this.#originalIndices.splice(toIndex, 0, originalIndex);
+
+        return operation;
+    }
+
+    // Remove the outstanding items.
+    removeRemaining(index) {
+        const operations = [];
+
+        while (this.length > index) {
+            operations.push(this.removeItem(index));
+        }
+
+        return operations;
+    }
 }
 
 export function arraysDiffSequence(
@@ -137,10 +169,9 @@ export function arraysDiffSequence(
             sequence.push(array.addItem(item, index));
             continue;
         }
-
-        // TODO: move case
+        sequence.push(array.moveItem(item, index));
     }
-    // TODO: remove extra items
+    sequence.push(...array.removeRemaining(newArray.length));
 
     return sequence;
 }
