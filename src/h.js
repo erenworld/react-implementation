@@ -6,14 +6,14 @@ export const DOM_TYPES = {
     FRAGMENT: 'fragment'
 }
 
-function hString(str) {
+export function hString(str) {
     return {
         type: DOM_TYPES.TEXT,
         value: str
     }
 }
 
-function hElement(tag, props = {}, children = []) {
+export function hElement(tag, props = {}, children = []) {
     return {
         tag,
         props,
@@ -22,7 +22,7 @@ function hElement(tag, props = {}, children = []) {
     }
 }
 
-function hFragment(vNodes) {
+export function hFragment(vNodes) {
     return {
         type: DOM_TYPES.FRAGMENT,
         children: mapTextNodes(withoutNulls(vNodes))

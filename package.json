@@ -1,13 +1,15 @@
 {
-  "name": "tiny-react",
-  "version": "1.0.0",
+  "name": "tiny-react-lib",
+  "version": "1.0.1",
   "description": "Re-implementation of React",
-  "main": "./src/index.js",
+  "main": "./dist/index.js",
   "directories": {
-    "doc": "docs"
+    "doc": "docs",
+    "test": "tests"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "babel src --out-dir dist"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,7 @@
   },
   "homepage": "https://github.com/erenworld/react-implementation#readme",
   "devDependencies": {
+    "@babel/cli": "^7.27.2",
     "@babel/core": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
     "@eslint/js": "^9.28.0",
@@ -32,5 +35,8 @@
   },
   "dependencies": {
     "uninstall": "^0.0.0"
-  }
+  },
+  "keywords": [
+    "react"
+  ]
 }

@@ -9,7 +9,7 @@ export function objectsDiff(oldObj, newObj) {
         added: newKeys.filter((key) => !(key in oldObj)),
         removed: oldKeys.filter((key) => !(key in newObj)),
         updated: newKeys.filter(
-            (key) => key in oldObj && oldKeys[key] !== newObj[key]
+            (key) => key in oldObj && oldObj[key] !== newObj[key]
         )
     }
 }
