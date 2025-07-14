@@ -1,14 +1,35 @@
-export function addEventListener(eventName, handler, el) {
-    el.addEventListener(eventName, handler);
+export function addEventListener(
+        eventName, 
+        handler, 
+        el,
+        hostComponent = null) {
 
-    return handler;
+        function boundHandler() {
+            hostComponent 
+                // If a host component exists, binds it to the event handler context.
+                ? handler.apply(hostComponent, arguments)
+                // Otherwise, calls the event handler.
+                : handler(...arguments);
+        }
+        // Adds the bound event listener to the element.
+        el.addEventListener(eventName, boundHandler);
+
+        return handler;
 }
 
-export function addEventListeners(listeners = {}, el) {
+export function addEventListeners(
+    listeners = {},
+    el,
+    hostComponent = null
+) {
     const addedListeners = {};
 
     Object.entries(listeners).forEach(([eventName, handler]) => {
-        const listener = addEventListener(eventName, handler, el);
+        const listener = addEventListener(
+                            eventName, 
+                            handler, 
+                            el,
+                            hostComponent);
         addedListeners[eventName] = listener;
     })
 
