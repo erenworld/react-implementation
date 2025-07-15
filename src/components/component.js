@@ -8,9 +8,9 @@ import { hasOwnProperty } from "../utils/objects";
 // creates a component class that uses that function to render its view.
 export function defineComponent({ render, state, ...methods }) {
     class Component {
+        #isMounted = false;
         #vdom = null;
         #hostEl = null;
-        #isMounted = false;
 
         constructor(props = {}) {
             this.props = props;
@@ -57,7 +57,8 @@ export function defineComponent({ render, state, ...methods }) {
             }
 
             this.#vdom = this.render(); // Save the result.
-            mountDOM(this.#vdom, hostEl, index);
+            mountDOM(this.#vdom, hostEl, index, this);
+        
             this.#hostEl = hostEl;
             this.#isMounted = true;
         }
@@ -68,6 +69,7 @@ export function defineComponent({ render, state, ...methods }) {
             }
 
             destroyDOM(this.#vdom);
+        
             this.#vdom = null;
             this.#hostEl = null;
             this.#isMounted = false;
@@ -83,7 +85,7 @@ export function defineComponent({ render, state, ...methods }) {
         }
     }
     
-    for (const methodName of methods) {
+    for (const methodName in methods) {
         if (hasOwnProperty(Component, methodName)) {
             throw new Error(`Method "${methodName}()" already exists in the component.`);
         }
