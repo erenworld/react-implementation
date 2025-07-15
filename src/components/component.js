@@ -24,7 +24,13 @@ export function defineComponent({ render, state, ...methods }) {
             }
             if (this.#vdom.type === DOM_TYPES.FRAGMENT) {
                 // If the vdom top node is a fragment, returns the elements inside the fragment
-                return extractChildren(this.#vdom).map((child) => child.el);
+                return extractChildren(this.#vdom).flatMap((child) => {
+                    // Check whether the node is a component.
+                    if (child.type === DOM_TYPES.COMPONENT) {
+                        return child.component.elements; // Calls the elements getter recursively.
+                    }
+                    return [child.el]; // Otherwise, returns the node’s element inside an array
+                })
             }
             // If vdom top node is a single node
             return [this.#vdom.el];
