@@ -3,6 +3,7 @@ import { mountDOM } from "../mount-dom";
 import { patchDOM } from "../patch-dom";
 import { DOM_TYPES, extractChildren } from "../h";
 import { hasOwnProperty } from "../utils/objects";
+import { Dispatcher } from "../dispatcher";
 
 export function defineComponent({ render, state, ...methods }) {
     class Component {
@@ -11,6 +12,8 @@ export function defineComponent({ render, state, ...methods }) {
         #hostEl = null;
         #eventsHandlers = null;
         #parentComponent = null;
+        #dispatcher = new Dispatcher();
+        #subscriptions = []; // An array for the unsubscribe functions
 
         constructor(
             props = {},
@@ -21,6 +24,22 @@ export function defineComponent({ render, state, ...methods }) {
             this.state = state ? state(props) : {};
             this.#eventsHandlers = eventHandlers;
             this.#parentComponent = parentComponent;
+        }
+
+        #wireEventHandlers() {
+            this.#subscriptions = Object.entries(this.#eventsHandlers)
+                                    .map(([eventName, handler]) => 
+                                        this.#wireEventHandler(eventName, handler))
+        }
+
+        #wireEventHandler(eventName, handler) {
+            return this.#dispatcher.subscribe(eventName, (payload) => {
+                if (this.#parentComponent) {
+                    handler.call(this.#parentComponent, payload);
+                } else {
+                    handler(payload);
+                }
+            })
         }
 
         get elements() {
@@ -77,6 +96,7 @@ export function defineComponent({ render, state, ...methods }) {
 
             this.#vdom = this.render(); // Save the result.
             mountDOM(this.#vdom, hostEl, index, this);
+            this.#wireEventHandlers();
         
             this.#hostEl = hostEl;
             this.#isMounted = true;
@@ -88,15 +108,21 @@ export function defineComponent({ render, state, ...methods }) {
             }
 
             destroyDOM(this.#vdom);
+            this.#subscriptions.forEach((unsubscribe) => unsubscribe());
         
             this.#vdom = null;
             this.#hostEl = null;
             this.#isMounted = false;
+            this.#subscriptions = [];
+        }
+
+        emit(eventName, payload) {
+            this.#dispatcher.dispatch(eventName, payload);
         }
 
         #patch() {
             if (!this.#isMounted) {
-                throw new Error('Component is not mounted');
+                throw new Error('Cannot unmount: component is not mounted.');
             }
 
             const vdom = this.render();
