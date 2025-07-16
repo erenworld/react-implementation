@@ -52,13 +52,13 @@ function createTextNode(vdom, parentElement, index) {
     insert(textNode, parentElement, index);
 }
 
-// Object.getPrototypeOf(document.createElement('foobar')) // HTMLUnknownElement
 function createElementNode(vdom, parentElement, index, hostComponent) {
-    const { tag, props, children } = vdom;
-    const elementNode = document.createElement(tag);
+    const { tag, children } = vdom;
 
-    addProps(elementNode, props, vdom, hostComponent);
+    const elementNode = document.createElement(tag);
+    addProps(elementNode, vdom, hostComponent);
     vdom.el = elementNode;
+
     children.forEach((child) => 
         mountDOM(child, elementNode, null, hostComponent));
 
@@ -77,8 +77,8 @@ function createFragmentNode(vdom, parentElement, index, hostComponent) {
     );
 }
 
-function addProps(element, props, vdom, hostComponent) {
-    const { on: events, ...attrs } = props;
+function addProps(element, vdom, hostComponent) {
+    const { props: attrs, events } = extractPropsAndEvents(vdom);
 
     vdom.listeners = addEventListeners(events, element, hostComponent);
     setAttributes(element, attrs);
