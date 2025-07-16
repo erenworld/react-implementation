@@ -1,6 +1,7 @@
 import { defineComponent } from "./component";
 import { hElement } from "../h";
 
+// eslint-disable-next-line no-unused-vars
 const List = defineComponent({
     render() {
         const { todos } = this.props;
