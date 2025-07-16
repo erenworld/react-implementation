@@ -12,6 +12,7 @@ import {
     setStyle
 } from './attributes';
 import { addEventListener } from './events';
+import { extractPropsAndEvents } from './utils/props';
 
 
 export function patchDOM(
@@ -39,10 +40,24 @@ export function patchDOM(
             patchElement(oldVdom, newVdom, hostComponent);
             break;
         }
+        case DOM_TYPES.COMPONENT: {
+            patchComponent(oldVdom, newVdom);
+            break;
+        }
     }
     patchChildren(oldVdom, newVdom, hostComponent);
 
     return newVdom;
+}
+
+function patchComponent(oldVdom, newVdom) { 
+    const { component } = oldVdom;  // Extracts the component instance from the old virtual node
+    const { props } = extractPropsAndEvents(newVdom);
+
+    component.updateProps(props);
+
+    newVdom.component = component; // Save component instance in the new virtual node
+    newVdom.el = component.firstElement; // Save the component instance in the new virtual node
 }
 
 function patchText(oldVdom, newVdom) {

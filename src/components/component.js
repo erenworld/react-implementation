@@ -4,17 +4,23 @@ import { patchDOM } from "../patch-dom";
 import { DOM_TYPES, extractChildren } from "../h";
 import { hasOwnProperty } from "../utils/objects";
 
-// A factory function that, given a render() function,
-// creates a component class that uses that function to render its view.
 export function defineComponent({ render, state, ...methods }) {
     class Component {
         #isMounted = false;
         #vdom = null;
         #hostEl = null;
+        #eventsHandlers = null;
+        #parentComponent = null;
 
-        constructor(props = {}) {
+        constructor(
+            props = {},
+            eventHandlers = {},
+            parentComponent = null,
+        ) {
             this.props = props;
             this.state = state ? state(props) : {};
+            this.#eventsHandlers = eventHandlers;
+            this.#parentComponent = parentComponent;
         }
 
         get elements() {
@@ -50,6 +56,13 @@ export function defineComponent({ render, state, ...methods }) {
         updateState(state) {
             this.state = { ...this.state, ...state };
             this.#patch(); // To reflect the changes in the DOM
+        }
+
+        updateProps(props) {
+            // TODOS: By comparing the old new prop objects, we can avoid patching and
+            // TODOS:the component—and all its subcomponents—if its props haven’t changed (deep-equal package)
+            this.props = { ...this.props, ...props }; // Merge new and old props.
+            this.#patch(); // Re-render
         }
 
         render() {

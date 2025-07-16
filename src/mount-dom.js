@@ -1,6 +1,7 @@
 import { DOM_TYPES } from './h';
 import { setAttributes } from './attributes';
 import { addEventListeners } from './events';
+import { extractPropsAndEvents } from './utils/props';
 
 export function mountDOM(
     vdom, 
@@ -29,6 +30,17 @@ export function mountDOM(
             throw new Error(`Can't mount DOM of type: ${vdom.type}`);
         }
     }
+}
+
+function createComponentNode(vdom, parentEl, index, hostComponent)
+{
+    const Component = vdom.tag;
+    const { props, events } = extractPropsAndEvents(vdom);
+    const component = new Component(props, events, hostComponent);
+
+    component.mount(parentEl, index);
+    vdom.component = component; // Save component's first DOM Element in the Virtual Node.
+    vdom.el = component.firstElement;
 }
 
 function createTextNode(vdom, parentElement, index) {
