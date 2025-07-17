@@ -5,7 +5,13 @@ import { DOM_TYPES, extractChildren } from "../h";
 import { hasOwnProperty } from "../utils/objects";
 import { Dispatcher } from "../dispatcher";
 
-export function defineComponent({ render, state, ...methods }) {
+const emptyFn = () => {};
+
+export function defineComponent({ render, 
+                                  state, 
+                                  onMounted = emptyFn,
+                                  onUnmounted = emptyFn,
+                                  ...methods }) {
     class Component {
         #isMounted = false;
         #vdom = null;
@@ -128,6 +134,19 @@ export function defineComponent({ render, state, ...methods }) {
             const vdom = this.render();
             this.#vdom = patchDOM(this.#vdom, vdom, this.#hostEl, this); // Save the result.
         }
+
+        onMounted() {
+            return Promise.resolve(onMounted.call(this));
+        }
+
+        onUnmounted() {
+            return Promise.resolve(onUnmounted.call(this));
+        }
+
+        // async onMounted() {
+        //     const data = await fetch('https://api.example.com/data')
+        //     this.updateState({ data })
+        // }
     }
     
     for (const methodName in methods) {
