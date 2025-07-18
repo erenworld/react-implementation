@@ -7,7 +7,7 @@ export function enqueueJob(job) {
     scheduleUpdate();
 }
 
-function scheduleUpdate() {
+export function scheduleUpdate() {
     if (isScheduled) return;
 
     isScheduled = true;
@@ -18,7 +18,16 @@ function scheduleUpdate() {
 function processJobs() {
     while (jobs.length > 0) {
         const job = jobs.shift();
-        job();
+        const result = job();
+
+        Promise.resolve(result).then(
+            () => {
+                // Job completed successfully
+            },
+            (error) => {
+                console.error(`[scheduler]: ${error}`);
+            }
+        )
     }
 
     isScheduled = false;
