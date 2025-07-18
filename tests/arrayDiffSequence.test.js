@@ -14,7 +14,7 @@ function applyArraysDiffSequence(oldArray, diffSeq) {
                 break;
         }
         return array;
-    }, [...oldArray]); // clone to avoid mutating input
+    }, [...oldArray]); 
 }
 
 describe('arraysDiffSequence', () => {
