@@ -52,8 +52,10 @@ export function patchDOM(
 
 function patchComponent(oldVdom, newVdom) { 
     const { component } = oldVdom;  // Extracts the component instance from the old virtual node
+    const { children } = newVdom;
     const { props } = extractPropsAndEvents(newVdom);
 
+    component.setExternalContent(children);
     component.updateProps(props);
 
     newVdom.component = component; // Save component instance in the new virtual node

@@ -49,3 +49,28 @@ the key was removed. Repeat with all keys.
 - Take a key in the new object. If you don’t see it in the old object, you know that
 the key was added. Repeat with all keys.
 - Take a key in the new object. If you see it in the old object and the value associated with the key is different, you know that the value associated with the key changed.
+
+# Definition
+The reconciliation algorithm compares two virtual DOM trees,
+finds the sequence of operations that transforms one into the other, and
+patches the real DOM by applying those operations to it. The algorithm is
+recursive, starting at the top-level nodes of both virtual DOM trees. After
+comparing these nodes, it moves to their children until it reaches the leaves
+of the trees.
+
+1. Start at the top-level nodes of both virtual DOM trees.
+2. If the nodes are different, destroy the DOM node (and everything that’s below
+it), and replace it with the new node and its subtree.
+3. If the nodes are equal:
+    - Text nodes — Compare and patch their nodeValue (the property containing
+    the text).
+    - Element nodes — Compare and patch their props (attributes, CSS classes and
+    styles, and event listeners).
+4. Find the sequence of operations that transforms the first node’s children array
+into the second node’s.
+5. For each operation, patch the DOM accordingly:
+    - Adding a node. Mount the new node (and its subtree) at the given index.
+    - Removing a node. Destroy the node (and its subtree) at the given index.
+    - Moving a node. Move the node to the new index. Start from step 1, using the
+    moved nodes as the new top-level nodes.
+    - Doing no operation. Start from step 1, using the current nodes as the new toplevel nodes.

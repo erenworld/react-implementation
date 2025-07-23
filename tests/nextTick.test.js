@@ -1,5 +1,4 @@
 import { test, expect, beforeEach, afterEach } from 'vitest'
-import { createApp } from 'fe-fwk'
 import { Counter } from './counter'
 
 let app = null;

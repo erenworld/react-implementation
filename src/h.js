@@ -4,7 +4,8 @@ export const DOM_TYPES = {
     TEXT: 'text',
     ELEMENT: 'element',
     FRAGMENT: 'fragment',
-    COMPONENT: 'component'
+    COMPONENT: 'component',
+    SLOT: 'slot'
 }
 
 export function hString(str) {
@@ -31,6 +32,10 @@ export function hFragment(vNodes) {
         type: DOM_TYPES.FRAGMENT,
         children: mapTextNodes(withoutNulls(vNodes))
     }
+}
+
+export function hSlot(children = []) {
+    return { type: DOM_TYPES.SLOT, children };
 }
 
 export function extractChildren(vdom) {

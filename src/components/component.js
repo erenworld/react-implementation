@@ -4,6 +4,7 @@ import { patchDOM } from "../patch-dom";
 import { DOM_TYPES, extractChildren } from "../h";
 import { hasOwnProperty } from "../utils/objects";
 import { Dispatcher } from "../dispatcher";
+import { fillSlots } from './slots';
 
 const emptyFn = () => {};
 
@@ -20,7 +21,9 @@ export function defineComponent({ render,
         #parentComponent = null;
         #dispatcher = new Dispatcher();
         #subscriptions = []; // An array for the unsubscribe functions
+        #children = []; // Slots
 
+        
         constructor(
             props = {},
             eventHandlers = {},
@@ -30,6 +33,10 @@ export function defineComponent({ render,
             this.state = state ? state(props) : {};
             this.#eventsHandlers = eventHandlers;
             this.#parentComponent = parentComponent;
+        }
+        
+        setExternalContent(children) {
+            this.#children = children;
         }
 
         #wireEventHandlers() {
@@ -92,7 +99,11 @@ export function defineComponent({ render,
 
         render() {
             // returns its view as a virtual DOM based on the state.
-            return render.call(this);
+            // return render.call(this);
+            const vdom = render.call(this);
+            fillSlots(vdom, this.#children);
+
+            return vdom;
         }
 
         mount(hostEl, index = null) {
