@@ -64,3 +64,41 @@ function extractQuery(path) {
 
 // matcher.extractQuery('/home') // {}
 // matcher.extractQuery('/home?tab=profile') // { tab: 'profile' }
+
+
+
+// /user/:id/orders/:orderId
+// \^/user/(?<id>)/orders/(?<orderId>[^/])$
+function makeRouteWithParamsRegex({ path }) {
+    const regex = path.replace(
+        /:([^/]+)/g,
+        (_, paramName) => `(?<${paramName}>[^/]+)`
+    )
+
+    return new RegExp(`^${regex}$`)
+}
+
+
+function makeMatcherWithParams(route) {
+    const regex = makeRouteWithParamsRegex(route);
+    const isRedirect = typeof route.redirect === 'string';
+
+    return {
+        route,
+        isRedirect,
+        checkMatch(path) {
+            return regex.test(path);
+        },
+        extractParams(path) {
+            const { groups } = regex.exec(path);
+            return groups;
+        },
+        extractQuery,
+    }
+}
+
+// const route = { path: '/user/:id/orders/:orderId' }
+// const matcher = makeMatcherWithParams(route)
+
+// matcher.checkMatch('/user/123/orders/456') // true
+// matcher.extractParams('/user/123/orders/456') // { id: '123', orderId: '456' }
