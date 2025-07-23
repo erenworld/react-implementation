@@ -26,3 +26,20 @@ function makeRouteWithoutParamsRegex({ path }) {
 
     return new RegExp(`${path}`);
 }
+
+function makeMatcherWithoutParams(route) {
+    const regex = makeRouteWithoutParamsRegex(route);
+    const isRedirect = typeof route.redirect === 'string';
+
+    return {
+        route,
+        isRedirect,
+        checkMatch(path) {
+            return regex.test(path);
+        },
+        extractParams() {
+            return {};
+        },
+        extractQuery,
+    }
+}
