@@ -1,0 +1,3 @@
+The concept of routing is crucial for web application navigation. Traditionally, visiting a website involved making a server request for each click or interaction, leading to the loading of a new HTML page. However, Single-Page Applications (SPAs) have transformed this approach.
+
+SPAs provide a dynamic and interactive user experience by loading a single HTML page initially and updating its content dynamically as users interact. Routing in SPAs refers to how the application manages different views or "pages" based on the URL or user interactions, all without full page reloads. This client-side navigation leads to faster load times, smoother transitions, and a more engaging user experience.

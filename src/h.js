@@ -8,6 +8,8 @@ export const DOM_TYPES = {
     SLOT: 'slot'
 }
 
+let hSlotCalled = false;
+
 export function hString(str) {
     return {
         type: DOM_TYPES.TEXT,
@@ -34,7 +36,16 @@ export function hFragment(vNodes) {
     }
 }
 
+export function didCreateSlot() {
+    return hSlotCalled;
+}
+
+export function resetDidCreateSlot() {
+    hSlotCalled = false;
+}
+
 export function hSlot(children = []) {
+    hSlotCalled = true;
     return { type: DOM_TYPES.SLOT, children };
 }
 

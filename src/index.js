@@ -1,4 +1,4 @@
 export { createApp } from './app';
-export { hString, hElement, hFragment } from './h';
+export { DOM_TYPES, hString, hElement, hFragment, hSlot } from './h';
 export { defineComponent } from './components/component';
 export { nextTick } from './next-tick.js'

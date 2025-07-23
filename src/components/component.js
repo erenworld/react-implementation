@@ -1,10 +1,16 @@
 import { destroyDOM } from "../destroy-dom";
 import { mountDOM } from "../mount-dom";
 import { patchDOM } from "../patch-dom";
-import { DOM_TYPES, extractChildren } from "../h";
+import {
+    DOM_TYPES,
+    extractChildren,
+    didCreateSlot, 
+    resetDidCreateSlot
+} from "../h";
 import { hasOwnProperty } from "../utils/objects";
 import { Dispatcher } from "../dispatcher";
 import { fillSlots } from './slots';
+
 
 const emptyFn = () => {};
 
@@ -101,7 +107,11 @@ export function defineComponent({ render,
             // returns its view as a virtual DOM based on the state.
             // return render.call(this);
             const vdom = render.call(this);
-            fillSlots(vdom, this.#children);
+
+            if (didCreateSlot()) {
+                fillSlots(vdom, this.#children);
+                resetDidCreateSlot();
+            }
 
             return vdom;
         }
