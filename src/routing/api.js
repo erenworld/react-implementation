@@ -43,3 +43,24 @@ function makeMatcherWithoutParams(route) {
         extractQuery,
     }
 }
+
+function extractQuery(path) {
+    const queryIndex = path.indexOf('?');
+
+    if (queryIndex === -1) {
+        return {};
+    }
+
+    const search = new URLSearchParams(path.slice(queryIndex + 1));
+
+    return Object.entries(search.entries());
+}
+
+// const route = { path: '/home' }
+// const matcher = makeMatcherWithoutParams(route)
+
+// matcher.checkMatch('/users') // false
+// matcher.checkMatch('/home') // true
+
+// matcher.extractQuery('/home') // {}
+// matcher.extractQuery('/home?tab=profile') // { tab: 'profile' }
