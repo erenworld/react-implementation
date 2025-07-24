@@ -123,6 +123,7 @@ export class HashRouter {
       this.#query = matcher.extractQuery(path);
       this.#pushState(path);
     }
+    this.#dispatcher.dispatch(ROUTER_EVENT, { from, to, router: this });
   }
 
   #pushState(path) {
@@ -172,4 +173,14 @@ export class HashRouter {
       redirectPath: null,
     };
   }
+}
+
+export class NoopRouter {
+    init() {}
+    destroy() {}
+    navigateTo() {}
+    back() {}
+    forward() {}
+    subscribe() {}
+    unsubscribe() {}
 }
