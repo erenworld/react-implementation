@@ -1,9 +1,16 @@
 import { makeRouteMatcher } from './route-matchers'
+import { Dispatcher } from '../dispatcher';
+
+const ROUTER_EVENT = 'router-event';
 
 export class HashRouter {
   #matchers = []
   #onPopState = () => this.#matchCurrentRoute()
   #isInitialized = false
+
+  #dispatcher = new Dispatcher();
+  #subscriptions = new WeakMap();
+  #subscriberFns = new Set();
 
   #matchedRoute = null
   get matchedRoute() {
@@ -61,7 +68,25 @@ export class HashRouter {
   #matchCurrentRoute() {
     return this.navigateTo(this.#currentRouteHash)
   }
+ 
+  // subscribe & unsubscribe
+  subscribe(handler) {
+    const unsubscribe = this.#dispatcher.subscribe(ROUTER_EVENT, handler);
+    this.#subscriptions.set(handler, unsubscribe);
+    this.#subscriberFns.add(handler);
+  }
 
+  unsubscribe(handler) {
+    const unsubscribe = this.#subscriptions.get(handler);
+
+    if (unsubscribe) {
+        unsubscribe();
+        this.#subscriptions.delete(handler);
+        this.#subscriberFns.delete(handler);
+    }
+  }
+
+  // navigateTo
   async navigateTo(path) {
     const matcher = this.#matchers.find((matcher) =>
       matcher.checkMatch(path)
@@ -81,10 +106,22 @@ export class HashRouter {
       return this.navigateTo(matcher.route.redirect)
     }
 
-    this.#matchedRoute = matcher.route
-    this.#params = matcher.extractParams(path)
-    this.#query = matcher.extractQuery(path)
-    this.#pushState(path)
+    const from = this.#matchedRoute;
+    const to = matcher.route;
+
+    const { shouldNavigate, shouldRedirect, redirectPath } = 
+        await this.#canChangeRoute(from, to);
+
+    if (shouldRedirect) {
+        return this.navigateTo(redirectPath);
+    }
+
+    if (shouldNavigate) {
+        this.#matchedRoute = matcher.route
+        this.#params = matcher.extractParams(path)
+        this.#query = matcher.extractQuery(path)
+        this.#pushState(path)
+    }
   }
 
   #pushState(path) {
@@ -97,5 +134,37 @@ export class HashRouter {
 
   forward() {
     window.history.forward()
+  }
+
+  async #canChangeRoute(from, to) {
+    const guard = to.beforeEnter;
+
+    if (typeof guard !== 'function') {
+        return {
+            shouldRedirect: false,
+            shouldNavigate: true,
+            redirectPath: null,
+        }
+    }
+    const result = await guard(from?.path, to?.path);
+    if (result === false) {
+        return {
+            shouldRedirect: false,
+            shouldNavigate: false,
+            redirectPath: null,
+        }
+    }
+    if (typeof result === 'string') {
+        return {
+            shouldRedirect: true,
+            shouldNavigate: false,
+            redirectPath: result,
+        }
+    }
+    return {
+        shouldRedirect: false,
+        shouldNavigate: true,
+        redirectPath: null,
+    }
   }
 }
