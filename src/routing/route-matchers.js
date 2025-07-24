@@ -65,8 +65,6 @@ function extractQuery(path) {
 // matcher.extractQuery('/home') // {}
 // matcher.extractQuery('/home?tab=profile') // { tab: 'profile' }
 
-
-
 // /user/:id/orders/:orderId
 // \^/user/(?<id>)/orders/(?<orderId>[^/])$
 function makeRouteWithParamsRegex({ path }) {
