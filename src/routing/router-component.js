@@ -1,6 +1,7 @@
 import { defineComponent } from '../components/component'
 import { hElement, hSlot } from '../h'
 
+// <RouterLink to="/profil">profil</RouterLink>
 export const RouterLink = defineComponent({
     render() {
         const { to } = this.props
@@ -15,4 +16,38 @@ export const RouterLink = defineComponent({
         }, 
         [hSlot()])
     }
+})
+
+export const RouterOutlet = defineComponent({
+    state() {
+        return {
+            matchedRoute: null,
+            subscription: null,
+        }
+    },
+
+    onMounted() {
+        const subscription = this.appContext.router.subscribe(({ to }) => {
+            this.handleRouteChange(to);
+        })
+
+        this.updateState({ subscription });
+    },
+
+    onUnmounted() {
+        const { subscription } = this.state;
+        this.appContext.router.unsubscribe(subscription);
+    },
+
+    handleRouteChange(matchedRoute) {
+        this.updateState({ matchedRoute });
+    },
+
+    render() {
+        const { matchedRoute } = this.state;
+
+        return hElement('div', { id: 'router-outlet' }, [
+            matchedRoute ? hElement(matchedRoute.component) : null
+        ])
+    },
 })
