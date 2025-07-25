@@ -28,6 +28,7 @@ export function defineComponent({ render,
         #dispatcher = new Dispatcher();
         #subscriptions = []; // An array for the unsubscribe functions
         #children = []; // Slots
+        #appContext = null;
 
         
         constructor(
@@ -164,10 +165,13 @@ export function defineComponent({ render,
             return Promise.resolve(onUnmounted.call(this));
         }
 
-        // async onMounted() {
-        //     const data = await fetch('https://api.example.com/data')
-        //     this.updateState({ data })
-        // }
+        setAppContext(appContext) {
+            this.#appContext = appContext;
+        }
+
+        get appContext() {
+            return this.#appContext;
+        }
     }
     
     for (const methodName in methods) {
