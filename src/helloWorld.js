@@ -1,5 +1,4 @@
 import { createApp,
-         hString,
          hElement,
          hFragment
 } from 'https://unpkg.com/tiny-react-lib@1.0.1/dist/index.js'
